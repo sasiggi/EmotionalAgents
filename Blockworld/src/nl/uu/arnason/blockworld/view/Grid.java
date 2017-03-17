@@ -9,13 +9,14 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.util.Observable;
 
 /**
  * Created by siggi on 13-Mar-17.
  */
-public class Grid extends JPanel implements java.util.Observer {
+public class Grid extends JPanel{
 
 	private JButton[][] gridSquares;
 	private int height;
@@ -57,30 +58,25 @@ public class Grid extends JPanel implements java.util.Observer {
 	}
 
 
-    public void setController(ActionListener controller) {
+    public void setController(MouseListener controller) {
         // set controller as actionListener for all buttons that need it
         for (int ii = 0; ii < height; ii++) {
             for (int jj = 0; jj < width; jj++) {
-                gridSquares[ii][jj].addActionListener(controller);
+                gridSquares[ii][jj].addMouseListener(controller);
             }
         }
     }
 
+    public JButton getGridSquare(int x, int y) {
+		return gridSquares[y][x];
+	}
 
-    @Override
-    public void update(Observable o, Object arg) {
-        U.p("update in view Grid");
-        for (int ii = 0; ii < height; ii++) {
-            for (int jj = 0; jj < width; jj++) {
-                Block.Status status = ((nl.uu.arnason.blockworld.model.Grid) arg).getBlockStatus(jj,ii);
-                if(status.equals(Block.Status.WALL))
-                    gridSquares[ii][jj].setBackground(Color.black);
-                else if(status.equals(Block.Status.AGENT))
-					gridSquares[ii][jj].setBackground(Color.red);
-                else
-                    gridSquares[ii][jj].setBackground(Color.white);
-            }
-        }
 
-    }
+	public int getGridHeight() {
+		return height;
+	}
+
+	public int getGridWidth() {
+		return width;
+	}
 }

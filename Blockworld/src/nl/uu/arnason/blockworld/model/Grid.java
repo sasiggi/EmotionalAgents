@@ -7,15 +7,13 @@ import nl.uu.arnason.blockworld.U;
  */
 public class Grid extends java.util.Observable {
 
-    private Model context;
     private int height;
     private int width;
     private Block[][] grid;
     private int agentPosX = 0;
     private int agentPosY = 0;
 
-    public Grid(Model context, int height, int width) {
-        this.context = context;
+    public Grid(int height, int width) {
         this.height=height;
         this.width=width;
         this.grid = new Block[height][width];
@@ -59,6 +57,12 @@ public class Grid extends java.util.Observable {
 
     private void moveAgentTo(int x, int y) {
         //use semaphores?
+        try {
+            // If there are more agents then it would be nice if they sleep independently do they can move at the same time
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         setBlockStatus(agentPosX,agentPosY, Block.Status.EMPTY);
         agentPosX = x;
         agentPosY = y;
@@ -86,6 +90,17 @@ public class Grid extends java.util.Observable {
             }
         }
         setBlockStatus(agentPosX,agentPosY, Block.Status.AGENT);
+    }
+
+    public void makeLike(Grid toCopy) {
+        for(int i=0; i<width; i++)  {
+            for(int j=0; j<height; j++)  {
+                setBlockStatus(i,j,toCopy.getBlockStatus(i,j));
+            }
+        }
+        agentPosX = toCopy.getAgentPosX();
+        agentPosY = toCopy.getAgentPosY();
+
     }
 
     public int getHeight() {

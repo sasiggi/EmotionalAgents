@@ -21,11 +21,13 @@ public class DestinationGoal extends Goal {
     public boolean isAchieved(AgentContextInterface contextInterface) {
         AgentModel agentModel = contextInterface.getContext(AgentModel.class);
         Grid grid = agentModel.getGrid();
-        if(grid.getAgentPosX() == this.x && grid.getAgentPosY() == this.y)
+        if(( grid.getAgentPosX() == this.x && grid.getAgentPosY() == this.y ) )
             return true;
         else
             return false;
     }
+
+
 
     public int getX() {
         return x;

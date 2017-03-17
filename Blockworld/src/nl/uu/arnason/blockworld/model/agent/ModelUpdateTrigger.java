@@ -13,22 +13,16 @@ import oo2apl.agent.Trigger;
 import java.util.Observable;
 import java.util.Observer;
 
-public final class ModelUpdateTrigger implements Trigger, Observer {
+public final class ModelUpdateTrigger implements Trigger {
 
     private Grid grid;
 
-    public ModelUpdateTrigger(){
+    public ModelUpdateTrigger(Grid grid){
+        this.grid = grid;
     }
 
     public Grid getGrid() {
         return grid;
-    }
-
-    @Override
-    public void update(Observable o, Object arg) {
-        U.p("Updating agent:"+ ((Grid)arg).getBlockStatus(0,0));
-        this.grid = ((Grid)arg);
-
     }
 
 }

@@ -19,16 +19,21 @@ public final class GridAgentBuilder extends oo2apl.agent.AgentBuilder {
                 throws PlanExecutionError {
             AgentModel model = planInterface.getContext(AgentModel.class);
             //use context for sth
-            model.moveRight();
+            planInterface.getContext(Actuator.class).moveRight();
             planInterface.adoptGoal(new DestinationGoal(5,5));
             U.p("InitPlan run");
         }
     };
 
-    public GridAgentBuilder(AgentModel model){
+    public GridAgentBuilder(AgentModel model, Sensor sensor, Actuator actuator){
+
         addContext(model);
+        addContext(sensor);
+        addContext(actuator);
         addInitialPlan(this.myInitPlan);
-        addGoalPlanScheme(GridAgentBuilder::makeModelUpdateTriggerPlanScheme);
+
+        addExternalTriggerPlanScheme(GridAgentBuilder::makeModelUpdateTriggerPlanScheme);
+        addExternalTriggerPlanScheme(GridAgentBuilder::makeAddGoalTriggerPlanScheme);
         addGoalPlanScheme(GridAgentBuilder::adoptDestinationGoalPlanScheme);
     }
 
@@ -42,10 +47,20 @@ public final class GridAgentBuilder extends oo2apl.agent.AgentBuilder {
                     AgentModel agentModel = planInterface.getContext(AgentModel.class);
 
                     // update the agent model according to the triggered change from the model
-                    U.p("Updating the grid for agentModel");
-                    agentModel.setGrid(modelUpdateTrigger.getGrid());
+                    U.p("Model update triggered");
+                    Grid oldGrid = agentModel.getGrid();
+                    oldGrid.makeLike(modelUpdateTrigger.getGrid());
                 };
             } else return SubPlanInterface.UNINSTANTIATED;
+    }
+
+    private static final SubPlanInterface makeAddGoalTriggerPlanScheme(Trigger trigger, AgentContextInterface contextInterface) {
+        if(trigger instanceof GoalUpdateTrigger){
+            GoalUpdateTrigger goalUpdateTrigger = (GoalUpdateTrigger) trigger;
+            return (PlanToAgentInterface planInterface) -> {
+                planInterface.adoptGoal(new DestinationGoal(goalUpdateTrigger.getGoalPoint().getX(), goalUpdateTrigger.getGoalPoint().getY()));
+            };
+        } else return SubPlanInterface.UNINSTANTIATED;
     }
 
     // should return a FunctionalPlanSchemeInterface
@@ -55,7 +70,6 @@ public final class GridAgentBuilder extends oo2apl.agent.AgentBuilder {
             return (PlanToAgentInterface planInterface) -> {
                 // Obtain the contexts that are needed in this plan
                 AgentModel agentModel = planInterface.getContext(AgentModel.class);
-                Grid realWorld = agentModel.getRealWorld();
                 // move towards destination
                 int dx = destinationGoal.getX();
                 int dy = destinationGoal.getY();
@@ -75,8 +89,7 @@ public final class GridAgentBuilder extends oo2apl.agent.AgentBuilder {
                 else if (dy < cy)
                     moveY = -1;
 
-                realWorld.moveAgentBy(moveX,moveY);
-                // TODO: move in the real world, see how the goal is pursued, like fx from addGoalPlanScheme above
+                planInterface.getContext(Actuator.class).moveAgentBy(moveX,moveY);
             };
         } else return SubPlanInterface.UNINSTANTIATED;
     }

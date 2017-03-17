@@ -7,6 +7,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseListener;
 import java.util.Observable;
 
 /**
@@ -39,16 +40,20 @@ public class MainWindow extends JPanel implements java.util.Observer {
         tools.addSeparator();
         tools.add(message);
 
-        add(new JLabel("?"), BorderLayout.LINE_START);
+        add(new JLabel("?"), BorderLayout.NORTH);
 
         grid = new Grid(height,width);
         grid.setBorder(new LineBorder(Color.BLACK));
-        add(grid);
+        add(grid,BorderLayout.WEST);
+
+        GoalView goalView = new GoalView();
+        goalView.setBorder(new LineBorder(Color.BLACK));
+        add(goalView,BorderLayout.EAST);
+
 
     }
 
-    public void addGridController(ActionListener controller){
-        System.out.println("View      : adding controller");
+    public void addGridController(MouseListener controller){
         grid.setController(controller);
     }
 

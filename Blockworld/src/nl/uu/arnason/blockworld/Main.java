@@ -5,7 +5,7 @@ import nl.uu.arnason.blockworld.model.Model;
 import javax.swing.*;
 
 /**
- * Created by siggi on 13-Mar-17.
+ * Starts the UI thread
  */
 public class Main {
 
@@ -27,6 +27,13 @@ public class Main {
                 // ensures the minimum size is enforced.
                 f.setMinimumSize(f.getSize());
                 f.setVisible(true);
+
+                f.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                        bw.shutDownAgents();
+                    }
+                });
             }
 
         };
