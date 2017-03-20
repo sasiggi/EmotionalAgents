@@ -20,9 +20,14 @@ public class Grid extends java.util.Observable {
         initializeGrid();
     }
 
-    private void setBlockStatus(int x, int y, Block.Status status){
+    private void setBlockStatus(int x, int y, Block.Status status, boolean sendUpdate){
         // be careful about the difference between normal xy vs matrix yx
         grid[y][x].setStatus(status);
+
+        if(sendUpdate) {
+            setChanged();
+            notifyObservers(this);
+        }
     }
 
     public Block.Status getBlockStatus(int x, int y){
@@ -35,27 +40,13 @@ public class Grid extends java.util.Observable {
     }
 
     public void addWall(int x, int y){
-        setBlockStatus(x,y,Block.Status.WALL);
-        System.out.println(x+" - "+y);
-        setChanged();
-        notifyObservers(this);
+        setBlockStatus(x,y,Block.Status.WALL, true);
     }
     public void removeWall(int x, int y){
-        setBlockStatus(x,y,Block.Status.EMPTY);
-        setChanged();
-        notifyObservers(this);
-
+        setBlockStatus(x,y,Block.Status.EMPTY, true);
     }
 
-    public boolean moveRight() {
-        if(agentPosX < width && getBlockStatus(agentPosX+1,agentPosY).equals(Block.Status.EMPTY)) {
-            moveAgentTo(agentPosX+1, agentPosY);
-            return true;
-        } else
-            return false;
-    }
-
-    private void moveAgentTo(int x, int y) {
+    private void moveAgentTo(int x, int y) throws ArrayIndexOutOfBoundsException {
         //use semaphores?
         try {
             // If there are more agents then it would be nice if they sleep independently do they can move at the same time
@@ -63,22 +54,21 @@ public class Grid extends java.util.Observable {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        setBlockStatus(agentPosX,agentPosY, Block.Status.EMPTY);
+        setBlockStatus(agentPosX, agentPosY, Block.Status.EMPTY, true);
         agentPosX = x;
         agentPosY = y;
-        setBlockStatus(agentPosX,agentPosY, Block.Status.AGENT);
+        setBlockStatus(agentPosX, agentPosY, Block.Status.AGENT, true);
         setChanged();
         notifyObservers(this);
-
     }
 
-    public void moveAgentBy(int x, int y) {
+    public void moveAgentBy(int x, int y) throws ArrayIndexOutOfBoundsException{
         moveAgentTo(agentPosX + x, agentPosY + y);
     }
 
     @Override
     public void notifyObservers(Object arg) {
-        U.p("notifyObservers in Grid: agentPos: "+((Grid) arg).getAgentPosX()+","+((Grid) arg).getAgentPosY());
+        U.p("notifyObservers in GridView: agentPos: "+((Grid) arg).getAgentPosX()+","+((Grid) arg).getAgentPosY());
         super.notifyObservers(arg);
     }
 
@@ -86,16 +76,16 @@ public class Grid extends java.util.Observable {
         for(int i=0; i<height; i++)  {
             for(int j=0; j<width; j++)  {
                 grid[i][j] = new Block();
-                setBlockStatus(j,i,Block.Status.EMPTY);
+                setBlockStatus(j,i,Block.Status.EMPTY, false);
             }
         }
-        setBlockStatus(agentPosX,agentPosY, Block.Status.AGENT);
+        setBlockStatus(agentPosX,agentPosY, Block.Status.AGENT, false);
     }
 
     public void makeLike(Grid toCopy) {
         for(int i=0; i<width; i++)  {
             for(int j=0; j<height; j++)  {
-                setBlockStatus(i,j,toCopy.getBlockStatus(i,j));
+                setBlockStatus(i,j,toCopy.getBlockStatus(i,j), false);
             }
         }
         agentPosX = toCopy.getAgentPosX();
@@ -126,5 +116,7 @@ public class Grid extends java.util.Observable {
     public void setAgentPosY(int agentPosY) {
         this.agentPosY = agentPosY;
     }
+
+
 }
 

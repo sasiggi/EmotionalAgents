@@ -13,11 +13,11 @@ import oo2apl.agent.Trigger;
 import java.util.Observable;
 import java.util.Observer;
 
-public final class ModelUpdateTrigger implements Trigger {
+public final class GridUpdateTrigger implements Trigger {
 
     private Grid grid;
 
-    public ModelUpdateTrigger(Grid grid){
+    public GridUpdateTrigger(Grid grid){
         this.grid = grid;
     }
 

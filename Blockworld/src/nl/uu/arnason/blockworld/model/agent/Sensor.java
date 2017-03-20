@@ -1,6 +1,7 @@
 package nl.uu.arnason.blockworld.model.agent;
 
 import nl.uu.arnason.blockworld.U;
+import nl.uu.arnason.blockworld.model.DestinationGoal;
 import nl.uu.arnason.blockworld.model.GoalList;
 import nl.uu.arnason.blockworld.model.Grid;
 import oo2apl.agent.Context;
@@ -32,13 +33,8 @@ public class Sensor implements Context, Observer {
             return;
         }
         else if(arg instanceof Grid) {
-            ModelUpdateTrigger modelUpdateTrigger = new ModelUpdateTrigger((Grid) arg);
-            agent.addExternalTrigger(modelUpdateTrigger);
-        }
-        else if(arg instanceof GoalList.GoalPoint) {
-            GoalUpdateTrigger goalUpdateTrigger = new GoalUpdateTrigger((GoalList.GoalPoint) arg);
-            U.p("Sensor:GoalPoint: "+(goalUpdateTrigger.getGoalPoint().getX()+","+goalUpdateTrigger.getGoalPoint().getY()));
-            agent.addExternalTrigger(goalUpdateTrigger);
+            GridUpdateTrigger gridUpdateTrigger = new GridUpdateTrigger((Grid) arg);
+            agent.addExternalTrigger(gridUpdateTrigger);
         }
     }
 }

@@ -1,5 +1,9 @@
 package nl.uu.arnason.blockworld.view;
 
+import nl.uu.arnason.blockworld.U;
+import nl.uu.arnason.blockworld.controller.GoalController;
+import nl.uu.arnason.blockworld.model.DestinationGoal;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
@@ -14,28 +18,37 @@ import java.util.concurrent.ThreadLocalRandom;
 public class GoalView extends JPanel {
 
     private JButton[] goalBlocks;
-    private int nrOfGoals;
+    private int nrOfGoals = 0;
+    private GoalController controller;
 
 	public GoalView() {
         super();
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-        this.nrOfGoals = 10;
-        this.goalBlocks = new JButton[nrOfGoals];
 
 //        setBorder(new LineBorder(Color.BLACK));
         setBorder(new EmptyBorder(10, 10, 10, 10));
 
+        updateGoals(new int[][]{{0,0}}, new DestinationGoal.Emotion[]{DestinationGoal.Emotion.NEUTRAL});
+
+
+    }
+
+    public void updateGoals(int[][] targetList, DestinationGoal.Emotion[] emotionList) {
+	    U.p("GoalView updateGoals: "+targetList.length);
+	    clearGoals();
+        this.nrOfGoals = targetList.length;
+        this.goalBlocks = new JButton[nrOfGoals];
+
         // create the chess board squares
         Insets buttonMargin = new Insets(10,10,10,10);
-        Insets buttonPadding = new Insets(10,10,10,10);
 
         for (int ii = 0; ii < nrOfGoals; ii++) {
             GoalBlock b = new GoalBlock();
-            b.setPosX(ThreadLocalRandom.current().nextInt(0, nrOfGoals));
-            b.setPosY(ThreadLocalRandom.current().nextInt(0, nrOfGoals));
+            b.setPosX(targetList[ii][0]);
+            b.setPosY(targetList[ii][1]);
             b.setMargin(buttonMargin);
-            b.setText("Goal: "+b.getX()+","+b.getY());
+            b.setText("Goal: "+b.getPosX()+","+b.getPosY()+" E:"+emotionList[ii].toString());
             // our chess pieces are 64x64 px in size, so we'll
             // 'fill this in' using a transparent icon..
 //            ImageIcon icon = new ImageIcon(
@@ -48,17 +61,30 @@ public class GoalView extends JPanel {
         for (int ii = 0; ii < nrOfGoals; ii++) {
             add(goalBlocks[ii], BorderLayout.AFTER_LAST_LINE);
         }
+
+        applyController();
+
+        revalidate();
+        repaint();
+    }
+
+    public void clearGoals() {
+        this.removeAll();
     }
 
 
-//    public void setController(MouseListener controller) {
-//        // set controller as actionListener for all buttons that need it
-//        for (int ii = 0; ii < height; ii++) {
-//            for (int jj = 0; jj < width; jj++) {
-//                gridSquares[ii][jj].addMouseListener(controller);
-//            }
-//        }
-//    }
+    public void setController(GoalController controller) {
+	    this.controller = controller;
+	    applyController();
+    }
+
+    public void applyController() {
+
+        // set controller as actionListener for all buttons that need it
+        for (int ii = 0; ii < nrOfGoals; ii++) {
+            goalBlocks[ii].addMouseListener(controller);
+        }
+    }
 //
 //    public JButton getGridSquare(int x, int y) {
 //        return gridSquares[y][x];
@@ -73,7 +99,7 @@ public class GoalView extends JPanel {
 //        return width;
 //    }
 
-    private class GoalBlock extends JButton {
+    public class GoalBlock extends JButton {
         int posX;
         int posY;
 

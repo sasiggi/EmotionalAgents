@@ -12,12 +12,11 @@ import java.util.Observer;
 /**
  * Created by siggi on 14-Mar-17.
  */
-public class AgentModel implements Context{
+public class BeliefBase implements Context{
 
     private Grid grid;  // internal grid belief
-    private GoalList goalList;
 
-    public AgentModel() {
+    public BeliefBase() {
     }
 
     public Grid getGrid() {
@@ -29,12 +28,4 @@ public class AgentModel implements Context{
     }
 
 
-
-    public GoalList getGoalList() {
-        return goalList;
-    }
-
-    public void setGoalList(GoalList goalList) {
-        this.goalList = goalList;
-    }
 }

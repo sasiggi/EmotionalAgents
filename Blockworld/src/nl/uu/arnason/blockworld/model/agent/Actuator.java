@@ -1,5 +1,8 @@
 package nl.uu.arnason.blockworld.model.agent;
 
+import nl.uu.arnason.blockworld.U;
+import nl.uu.arnason.blockworld.model.Block;
+import nl.uu.arnason.blockworld.model.Grid;
 import nl.uu.arnason.blockworld.model.Model;
 import oo2apl.agent.Context;
 
@@ -14,16 +17,22 @@ public class Actuator implements Context {
         this.realWorld = realWorld;
     }
 
-    public boolean moveRight() {
-        if(realWorld.getGrid().getAgentPosX() < realWorld.getGrid().getWidth()) {
-            //try to move in real world/model, model change updates the agent
-            return realWorld.getGrid().moveRight();
-        }
-        return false;
-    }
 
-    public void moveAgentBy(int x, int y) {
-        realWorld.getGrid().moveAgentBy(x,y);
+    public boolean moveAgentBy(int x, int y) {
+        try {
+            Grid grid = realWorld.getGrid();
+            int agentX = grid.getAgentPosX();
+            int agentY = grid.getAgentPosY();
+            if(grid.getBlockStatus(agentX + x, agentY + y).equals(Block.Status.WALL))
+                return false;
+            else {
+                realWorld.getGrid().moveAgentBy(x, y);
+                return true;
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            U.p("Illegal movement:"+x+","+y);
+            return false;
+        }
     }
 
 }

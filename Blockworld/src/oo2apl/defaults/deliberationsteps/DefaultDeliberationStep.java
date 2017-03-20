@@ -3,6 +3,7 @@ package oo2apl.defaults.deliberationsteps;
 import java.util.Iterator;
 import java.util.List;
 
+import nl.uu.arnason.blockworld.model.DestinationGoal;
 import oo2apl.agent.DeliberationStepToAgentInterface;
 import oo2apl.agent.Trigger;
 import oo2apl.agent.Goal;
@@ -31,14 +32,20 @@ public abstract class DefaultDeliberationStep implements DeliberationStep {
 	 * plan scheme is applied. If the triggers are goals then they will  be skipped if they are 
 	 * already pursued (i.e. a plan is already in existence for that goal). */
 	protected final void applyPlanSchemes(final List<? extends Trigger> triggers, final List<PlanScheme> planSchemes){
-		for(Trigger trigger : triggers){ 
+		boolean destinationGoalPlanMade = false;
+		for(Trigger trigger : triggers){
 			// For goals check whether there is not already a plan instantiated for the goal. In this implementation each goal can have
 			// at most one instantiated plan scheme that tries to achieve that goal.
 			// TODO: this is different from 2APL, there it is checked FOR EACH rule whether that rule is already instantiated for
 			// the goal. Hence multiple plan schemes could be instantiated for the same goal. However, this is very rarely used
-			// and highly inefficient.  
+			// and highly inefficient.
 			if(!(trigger instanceof Goal && ((Goal)trigger).isPursued())){
-				for(PlanScheme planScheme : planSchemes){	
+				// @SOA: only make plans for one DestinationGoal
+				if(trigger instanceof DestinationGoal && destinationGoalPlanMade)
+					continue;
+				else
+					destinationGoalPlanMade = true;
+				for(PlanScheme planScheme : planSchemes){
 					if(this.deliberationInterface.tryApplication(trigger, planScheme)){
 						break;
 					}

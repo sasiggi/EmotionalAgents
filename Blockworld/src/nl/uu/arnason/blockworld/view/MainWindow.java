@@ -1,12 +1,12 @@
 package nl.uu.arnason.blockworld.view;
 
 import nl.uu.arnason.blockworld.U;
+import nl.uu.arnason.blockworld.controller.GoalController;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 import java.util.Observable;
 
@@ -15,7 +15,8 @@ import java.util.Observable;
  */
 public class MainWindow extends JPanel implements java.util.Observer {
 
-    private Grid grid;
+    private GridView gridView;
+    private GoalView goalView;
     private final JLabel message = new JLabel(
             "Press start to begin");
 
@@ -42,11 +43,11 @@ public class MainWindow extends JPanel implements java.util.Observer {
 
         add(new JLabel("?"), BorderLayout.NORTH);
 
-        grid = new Grid(height,width);
-        grid.setBorder(new LineBorder(Color.BLACK));
-        add(grid,BorderLayout.WEST);
+        gridView = new GridView(height,width);
+        gridView.setBorder(new LineBorder(Color.BLACK));
+        add(gridView,BorderLayout.WEST);
 
-        GoalView goalView = new GoalView();
+        goalView = new GoalView();
         goalView.setBorder(new LineBorder(Color.BLACK));
         add(goalView,BorderLayout.EAST);
 
@@ -54,11 +55,19 @@ public class MainWindow extends JPanel implements java.util.Observer {
     }
 
     public void addGridController(MouseListener controller){
-        grid.setController(controller);
+        gridView.setController(controller);
     }
 
-    public Grid getGrid() {
-        return grid;
+    public void addGoalController(GoalController controller) {
+        goalView.setController(controller);
+    }
+
+    public GridView getGridView() {
+        return gridView;
+    }
+
+    public GoalView getGoalView() {
+        return goalView;
     }
 
     @Override

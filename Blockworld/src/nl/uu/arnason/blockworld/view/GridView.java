@@ -16,13 +16,13 @@ import java.util.Observable;
 /**
  * Created by siggi on 13-Mar-17.
  */
-public class Grid extends JPanel{
+public class GridView extends JPanel{
 
 	private JButton[][] gridSquares;
 	private int height;
 	private int width;
 
-	public Grid(int height, int width) {
+	public GridView(int height, int width) {
 		super(new GridLayout(height, width));
 		this.height = height;
 		this.width = width;
@@ -30,7 +30,7 @@ public class Grid extends JPanel{
 
 		setBorder(new LineBorder(Color.BLACK));
 
-		// create the chess board squares
+		// create the squares
 		Insets buttonMargin = new Insets(0,0,0,0);
 		for (int ii = 0; ii < height; ii++) {
 			for (int jj = 0; jj < width; jj++) {
@@ -45,14 +45,12 @@ public class Grid extends JPanel{
 				b.setIcon(icon);
 				b.setBackground(Color.WHITE);
 				gridSquares[ii][jj] = b;
-
 			}
 		}
 
 		for (int ii = 0; ii < height; ii++) {
 			for (int jj = 0; jj < width; jj++) {
 				add(gridSquares[ii][jj]);
-
 			}
 		}
 	}
@@ -78,5 +76,26 @@ public class Grid extends JPanel{
 
 	public int getGridWidth() {
 		return width;
+	}
+
+	public class GridBlock extends JButton {
+		int posX;
+		int posY;
+
+		public int getPosX() {
+			return posX;
+		}
+
+		public void setPosX(int posX) {
+			this.posX = posX;
+		}
+
+		public int getPosY() {
+			return posY;
+		}
+
+		public void setPosY(int posY) {
+			this.posY = posY;
+		}
 	}
 }

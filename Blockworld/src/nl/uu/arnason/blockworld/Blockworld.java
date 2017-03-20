@@ -1,5 +1,6 @@
 package nl.uu.arnason.blockworld;
 
+import nl.uu.arnason.blockworld.controller.GoalController;
 import nl.uu.arnason.blockworld.controller.GridController;
 import nl.uu.arnason.blockworld.model.Grid;
 import nl.uu.arnason.blockworld.model.Model;
@@ -19,8 +20,10 @@ public class Blockworld {
 
 	private final MainWindow view;	//Highest abstraction of the View
 	private Model realWorld;	//Highest abstraction of the model. This is the real world.
-	private GridController controller;	//Highest abstraction of the Controller
-	private AgentModel agentModel;
+	private GridController gridController;	//Highest abstraction of the Controller
+	private GoalController goalController;	//Highest abstraction of the Controller
+	private BeliefBase beliefBase;
+	private GoalBase goalBase;
 
 	private AdminToPlatformInterface adminInterface;
 	private ExternalProcessToAgentInterface agent;
@@ -37,14 +40,15 @@ public class Blockworld {
 	    this.view = new MainWindow(height,width);
 
 	    // Connect the model to the view with controllers
-	    this.controller = new GridController();
+	    this.gridController = new GridController();
+	    this.goalController = new GoalController();
 	    //Controller observes changes in the model:
 	    //Make the gridController observe updates in gridModel
-        realWorld.getGrid().addObserver(controller);
+        realWorld.getGrid().addObserver(gridController);
         //Make the model react to commands from the view
-        controller.addModel(realWorld);
-        controller.addView(view);
-        view.addGridController(controller);
+        gridController.addModel(realWorld);
+        gridController.addView(view);
+        view.addGridController(gridController);
 
         // AGENT IMPLEMENTATION:
 		// Create the platform. Returns an interface to the platform to register new factories and create new agents
@@ -52,14 +56,21 @@ public class Blockworld {
 		// Create a new agent. The platform will return an interface to the agent.
 		// The agent has a sensor that listens for changes in the world, an actuator to act on it and an inner
 		// model that represents it's beliefs
-		agentModel = new AgentModel();
-		agentModel.setGrid(new Grid(height,width));
+		beliefBase = new BeliefBase();
+		beliefBase.setGrid(new Grid(height,width));
+		goalBase = new GoalBase();
+		realWorld.setGoalBase(goalBase);
+		realWorld.getGoalBase().addObserver(goalController);
+		goalController.addGoalBase(goalBase);
+		goalController.addView(view);
+		view.addGoalController(goalController);
 		Sensor sensor = new Sensor();
 		realWorld.getGrid().addObserver(sensor);
 		realWorld.addObserver(sensor);	//TODO: decide who listens to what
 		Actuator actuator = new Actuator(realWorld);
-		agent = adminInterface.newAgent(new GridAgentBuilder(agentModel, sensor, actuator));
+		agent = adminInterface.newAgent(new GridAgentBuilder(beliefBase, goalBase, sensor, actuator));
 		sensor.setAgent(agent);
+		goalBase.setAgent(agent);
 
 	}
 
