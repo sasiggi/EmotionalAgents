@@ -3,7 +3,7 @@ package oo2apl.defaults.deliberationsteps;
 import java.util.Iterator;
 import java.util.List;
 
-import nl.uu.arnason.blockworld.model.DestinationGoal;
+import nl.uu.arnason.blockworld.model.agent.Triggers.DestinationGoal;
 import oo2apl.agent.DeliberationStepToAgentInterface;
 import oo2apl.agent.Trigger;
 import oo2apl.agent.Goal;
@@ -43,10 +43,13 @@ public abstract class DefaultDeliberationStep implements DeliberationStep {
 				// @SOA: only make plans for one DestinationGoal
 				if(trigger instanceof DestinationGoal && destinationGoalPlanMade)
 					continue;
-				else
-					destinationGoalPlanMade = true;
+				// @SOA: don't make plans for sad goals
+				if(trigger instanceof DestinationGoal && ((DestinationGoal) trigger).getEmotion().equals(DestinationGoal.Emotion.SAD))
+					continue;
 				for(PlanScheme planScheme : planSchemes){
 					if(this.deliberationInterface.tryApplication(trigger, planScheme)){
+						if(trigger instanceof DestinationGoal)
+							destinationGoalPlanMade = true;
 						break;
 					}
 				}

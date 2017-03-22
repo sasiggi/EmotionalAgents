@@ -2,15 +2,11 @@ package nl.uu.arnason.blockworld.view;
 
 import nl.uu.arnason.blockworld.U;
 import nl.uu.arnason.blockworld.controller.GoalController;
-import nl.uu.arnason.blockworld.model.DestinationGoal;
+import nl.uu.arnason.blockworld.model.agent.Triggers.DestinationGoal;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.awt.event.MouseListener;
-import java.awt.image.BufferedImage;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by siggi on 16-Mar-17.

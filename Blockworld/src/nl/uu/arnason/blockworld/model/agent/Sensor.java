@@ -1,9 +1,8 @@
 package nl.uu.arnason.blockworld.model.agent;
 
 import nl.uu.arnason.blockworld.U;
-import nl.uu.arnason.blockworld.model.DestinationGoal;
-import nl.uu.arnason.blockworld.model.GoalList;
 import nl.uu.arnason.blockworld.model.Grid;
+import nl.uu.arnason.blockworld.model.agent.Triggers.GridUpdateTrigger;
 import oo2apl.agent.Context;
 import oo2apl.agent.ExternalProcessToAgentInterface;
 

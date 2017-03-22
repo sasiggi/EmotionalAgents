@@ -1,7 +1,5 @@
-package nl.uu.arnason.blockworld.model;
+package nl.uu.arnason.blockworld.model.agent.Triggers;
 
-import javafx.beans.Observable;
-import nl.uu.arnason.blockworld.U;
 import nl.uu.arnason.blockworld.model.Grid;
 import nl.uu.arnason.blockworld.model.agent.BeliefBase;
 import nl.uu.arnason.blockworld.model.agent.GoalBase;
@@ -17,6 +15,8 @@ public class DestinationGoal extends Goal {
 
     private static final AtomicInteger count = new AtomicInteger(1);    //Thread safe
 
+    private GoalBase goalBase;
+
     private int goalId;
     private int x;
     private int y;
@@ -26,7 +26,6 @@ public class DestinationGoal extends Goal {
     public enum Emotion {
         HAPPY, SAD, NEUTRAL
     }
-
 
     public DestinationGoal(int x, int y) {
         this.x = x;
@@ -42,18 +41,27 @@ public class DestinationGoal extends Goal {
         GoalBase goalBase = contextInterface.getContext(GoalBase.class);
         if(( grid.getAgentPosX() == this.x && grid.getAgentPosY() == this.y )) {
             setEmotion(Emotion.HAPPY);
-            contextInterface.getContext(GoalBase.class).notifyObservers();
             return true;
         } else if (cancelled) {
             return true;
         } else if (!goalBase.hasGoal(this)) {
             cancel();
             return true;
-        } else if (emotion.equals(Emotion.SAD)) {
-            return true;
         }
         else
             return false;
+    }
+
+    public void setGoalBase (GoalBase goalBase){
+        this.goalBase = goalBase;
+    }
+
+    public GoalBase getGoalBase() {
+        return goalBase;
+    }
+
+    public void updateView() {
+        goalBase.notifyObservers();
     }
 
 
@@ -76,6 +84,7 @@ public class DestinationGoal extends Goal {
 
     public void setEmotion(Emotion emotion) {
         this.emotion = emotion;
+        updateView();
     }
 
     public void cancel() {

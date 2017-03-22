@@ -48,12 +48,6 @@ public class Grid extends java.util.Observable {
 
     private void moveAgentTo(int x, int y) throws ArrayIndexOutOfBoundsException {
         //use semaphores?
-        try {
-            // If there are more agents then it would be nice if they sleep independently do they can move at the same time
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         setBlockStatus(agentPosX, agentPosY, Block.Status.EMPTY, true);
         agentPosX = x;
         agentPosY = y;

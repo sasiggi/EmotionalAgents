@@ -1,17 +1,12 @@
 package nl.uu.arnason.blockworld.controller;
 
 import nl.uu.arnason.blockworld.U;
-import nl.uu.arnason.blockworld.model.Block;
-import nl.uu.arnason.blockworld.model.DestinationGoal;
-import nl.uu.arnason.blockworld.model.Grid;
-import nl.uu.arnason.blockworld.model.Model;
+import nl.uu.arnason.blockworld.model.agent.Triggers.DestinationGoal;
 import nl.uu.arnason.blockworld.model.agent.GoalBase;
 import nl.uu.arnason.blockworld.view.GoalView;
-import nl.uu.arnason.blockworld.view.GridView;
 import nl.uu.arnason.blockworld.view.MainWindow;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.Observable;
 import java.util.Observer;

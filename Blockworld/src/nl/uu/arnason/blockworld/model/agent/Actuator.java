@@ -20,12 +20,19 @@ public class Actuator implements Context {
 
     public boolean moveAgentBy(int x, int y) {
         try {
+            // a movement takes time, even if it fails
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        try {
             Grid grid = realWorld.getGrid();
             int agentX = grid.getAgentPosX();
             int agentY = grid.getAgentPosY();
             if(grid.getBlockStatus(agentX + x, agentY + y).equals(Block.Status.WALL))
                 return false;
             else {
+                //use semaphores?
                 realWorld.getGrid().moveAgentBy(x, y);
                 return true;
             }

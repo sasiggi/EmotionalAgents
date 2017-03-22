@@ -1,14 +1,12 @@
 package nl.uu.arnason.blockworld.model.agent;
 
-import javafx.beans.Observable;
 import nl.uu.arnason.blockworld.U;
-import nl.uu.arnason.blockworld.model.DestinationGoal;
+import nl.uu.arnason.blockworld.model.agent.Triggers.DestinationGoal;
+import nl.uu.arnason.blockworld.model.agent.Triggers.GoalUpdateTrigger;
 import oo2apl.agent.Context;
 import oo2apl.agent.ExternalProcessToAgentInterface;
-import sun.security.krb5.internal.crypto.Des;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * Created by siggi on 17-Mar-17.
@@ -30,6 +28,9 @@ public class GoalBase extends java.util.Observable implements Context {
 
     public boolean addGoal(int x, int y) {
         DestinationGoal goal = new DestinationGoal(x,y);
+        goal.setGoalBase(this);
+        if(destinationGoals.contains(goal))
+            return false;
         if(destinationGoals.add(goal)) {
             GoalUpdateTrigger goalUpdateTrigger = new GoalUpdateTrigger(goal);
             U.p("GoalBase:addGoal: "+(goalUpdateTrigger.getDestinationGoal().getX()+","+goalUpdateTrigger.getDestinationGoal().getY()));
@@ -84,16 +85,6 @@ public class GoalBase extends java.util.Observable implements Context {
                 removeGoal(goal.getX(), goal.getY());
             }
         }
-    }
-
-    public void makeSad(DestinationGoal goal) {
-        for (DestinationGoal dgoal:destinationGoals) {
-            if(dgoal.equals(goal)) {
-                dgoal.setEmotion(DestinationGoal.Emotion.SAD);
-            }
-        }
-        notifyObservers();
-
     }
 
     @Override

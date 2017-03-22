@@ -1,7 +1,10 @@
 package nl.uu.arnason.blockworld.model.agent;
 
 import nl.uu.arnason.blockworld.U;
-import nl.uu.arnason.blockworld.model.DestinationGoal;
+import nl.uu.arnason.blockworld.model.agent.PlanSchemes.DestinationGoalPlanExecutionErrorPlanScheme;
+import nl.uu.arnason.blockworld.model.agent.PlanSchemes.DestinationGoalPlanScheme;
+import nl.uu.arnason.blockworld.model.agent.PlanSchemes.GoalUpdateTriggerPlanScheme;
+import nl.uu.arnason.blockworld.model.agent.PlanSchemes.GridUpdateTriggerPlanScheme;
 import oo2apl.agent.PlanToAgentInterface;
 import oo2apl.plan.Plan;
 import oo2apl.plan.PlanExecutionError;
@@ -30,9 +33,10 @@ public final class GridAgentBuilder extends oo2apl.agent.AgentBuilder {
         addContext(goalBase);
         addInitialPlan(this.myInitPlan);
 
-        addExternalTriggerPlanScheme(PlanSchemeBase::makeGridUpdateTriggerPlanScheme);
-        addExternalTriggerPlanScheme(PlanSchemeBase::makeGoalUpdateTriggerPlanScheme);
-        addGoalPlanScheme(PlanSchemeBase::destinationGoalPlanScheme);
+        addExternalTriggerPlanScheme(new GridUpdateTriggerPlanScheme());
+        addExternalTriggerPlanScheme(new GoalUpdateTriggerPlanScheme());
+        addGoalPlanScheme(new DestinationGoalPlanScheme());
+        addInternalTriggerPlanScheme(new DestinationGoalPlanExecutionErrorPlanScheme());
     }
 
 }

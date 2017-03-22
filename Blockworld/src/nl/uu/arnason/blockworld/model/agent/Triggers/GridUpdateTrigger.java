@@ -1,4 +1,4 @@
-package nl.uu.arnason.blockworld.model.agent;
+package nl.uu.arnason.blockworld.model.agent.Triggers;
 
 /**
  * Created by siggi on 14-Mar-17.
