@@ -14,7 +14,9 @@ import oo2apl.plan.PlanScheme;
 import oo2apl.plan.builtin.RunOncePlan;
 
 /**
- * Created by siggi on 22-Mar-17.
+ * The main plan to reach the destination.
+ * Try to move horizontally towards the destination. If that fails or is not applicable then try to move vertivally.
+ * If both fail then throw DestinationGoalPlanExecutionError
  */
 public class DestinationGoalPlanScheme implements PlanScheme {
 
@@ -49,21 +51,25 @@ public class DestinationGoalPlanScheme implements PlanScheme {
             else if (dx < cx)
                 moveX = -1;
 
-            if(moveX == 0) {
-                if (dy > cy)
-                    moveY = 1;
-                else if (dy < cy)
-                    moveY = -1;
-            }
+            if (dy > cy)
+                moveY = 1;
+            else if (dy < cy)
+                moveY = -1;
 
-            if (!planInterface.getContext(Actuator.class).moveAgentBy(moveX, moveY)) {
-                // if action fails
-                //TODO: get emotional? return another plan
-                U.p("Obstacle for plan");
-                throw new DestinationGoalPlanExecutionError(destinationGoal);
-            } else {
-                //get more hopeful
+            if(moveX != 0) {
+                if (planInterface.getContext(Actuator.class).moveAgentBy(moveX, 0)) {
+                    return;
+                }
             }
+            if(moveY != 0) {
+                if (planInterface.getContext(Actuator.class).moveAgentBy(0, moveY)) {
+                    return;
+                }
+            }
+            // If the agent moved successfully neither vertically nor horizontally we throw an error and resort to the backup plan
+            U.p("DestinationGoalPlanScheme: Obstacle for plan");
+            destinationGoal.onFailed();
+            throw new DestinationGoalPlanExecutionError(destinationGoal);
         }
     }
 }

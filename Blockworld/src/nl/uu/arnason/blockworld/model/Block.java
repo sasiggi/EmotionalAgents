@@ -1,7 +1,7 @@
 package nl.uu.arnason.blockworld.model;
 
 /**
- * Created by siggi on 13-Mar-17.
+ * A piece of the grid
  */
 public class Block {
     public enum Status {

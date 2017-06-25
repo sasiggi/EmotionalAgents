@@ -2,6 +2,7 @@ package nl.uu.arnason.blockworld.view;
 
 import nl.uu.arnason.blockworld.U;
 import nl.uu.arnason.blockworld.controller.GoalController;
+import nl.uu.arnason.blockworld.model.agent.EState;
 import nl.uu.arnason.blockworld.model.agent.Triggers.DestinationGoal;
 
 import javax.swing.*;
@@ -9,7 +10,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 /**
- * Created by siggi on 16-Mar-17.
+ * The view listing the current goals that the agent has, and their moods.
  */
 public class GoalView extends JPanel {
 
@@ -17,40 +18,40 @@ public class GoalView extends JPanel {
     private int nrOfGoals = 0;
     private GoalController controller;
 
-	public GoalView() {
+
+    public GoalView() {
         super();
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        setPreferredSize(new Dimension(150, 100));
 
-
-//        setBorder(new LineBorder(Color.BLACK));
         setBorder(new EmptyBorder(10, 10, 10, 10));
-
-        updateGoals(new int[][]{{0,0}}, new DestinationGoal.Emotion[]{DestinationGoal.Emotion.NEUTRAL});
-
-
     }
 
-    public void updateGoals(int[][] targetList, DestinationGoal.Emotion[] emotionList) {
-	    U.p("GoalView updateGoals: "+targetList.length);
-	    clearGoals();
+    public synchronized void updateGoals(int[][] targetList, EState[] eStates) {
+
+        clearGoals();
         this.nrOfGoals = targetList.length;
         this.goalBlocks = new JButton[nrOfGoals];
 
-        // create the chess board squares
-        Insets buttonMargin = new Insets(10,10,10,10);
+        Insets buttonMargin = new Insets(10, 10, 10, 10);
+
+        System.out.println("GoalView: numberOfGoals: " + nrOfGoals);
 
         for (int ii = 0; ii < nrOfGoals; ii++) {
             GoalBlock b = new GoalBlock();
             b.setPosX(targetList[ii][0]);
             b.setPosY(targetList[ii][1]);
             b.setMargin(buttonMargin);
-            b.setText("Goal: "+b.getPosX()+","+b.getPosY()+" E:"+emotionList[ii].toString());
-            // our chess pieces are 64x64 px in size, so we'll
-            // 'fill this in' using a transparent icon..
-//            ImageIcon icon = new ImageIcon(
-//                    new BufferedImage(64, 64, BufferedImage.TYPE_INT_ARGB));
-//            b.setIcon(icon);
-//            b.setBackground(Color.WHITE);
+            b.setText("Goal: " + b.getPosX() + "," + b.getPosY() + " E:" + eStates[ii].getDescription());
+            if (eStates[ii].isHappy())
+                setGoalBtnHappy(b);
+            if (eStates[ii].isSad())
+                setGoalBtnSad(b);
+            if (eStates[ii].isNeutral())
+                setGoalBtnNeutral(b);
+            if (eStates[ii].isHopeFearful())
+                setGoalBtnHopeFearful(b);
+
             goalBlocks[ii] = b;
         }
 
@@ -62,6 +63,7 @@ public class GoalView extends JPanel {
 
         revalidate();
         repaint();
+//
     }
 
     public void clearGoals() {
@@ -81,23 +83,28 @@ public class GoalView extends JPanel {
             goalBlocks[ii].addMouseListener(controller);
         }
     }
-//
-//    public JButton getGridSquare(int x, int y) {
-//        return gridSquares[y][x];
-//    }
-//
-//
-//    public int getGridHeight() {
-//        return height;
-//    }
-//
-//    public int getGridWidth() {
-//        return width;
-//    }
+
+    public void setGoalBtnHappy(JButton btn) {
+	    btn.setBackground(Color.green);
+    }
+    public void setGoalBtnSad(JButton btn) {
+        btn.setBackground(Color.red);
+    }
+    public void setGoalBtnNeutral(JButton btn) {
+        btn.setBackground(Color.lightGray);
+    }
+    public void setGoalBtnHopeFearful(JButton btn) {
+        btn.setBackground(Color.black);
+        btn.setForeground(Color.white);
+    }
 
     public class GoalBlock extends JButton {
         int posX;
         int posY;
+
+        public GoalBlock() {
+
+        }
 
         public int getPosX() {
             return posX;

@@ -1,26 +1,29 @@
 package nl.uu.arnason.blockworld.view;
 
-import nl.uu.arnason.blockworld.U;
-import nl.uu.arnason.blockworld.model.Block;
-
+import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
-import java.util.Observable;
+import java.io.File;
+import java.io.IOException;
 
 /**
- * Created by siggi on 13-Mar-17.
+ * The view showing the grid where the agent moves.
  */
 public class GridView extends JPanel{
 
 	private JButton[][] gridSquares;
 	private int height;
 	private int width;
+	private ImageIcon greyXIcon;
+	private ImageIcon blueXIcon;
+	private ImageIcon redXIcon;
+	private ImageIcon blackXIcon;
+	private ImageIcon greenXIcon;
+	private ImageIcon agentIcon;
+	private ImageIcon blankIcon;
 
 	public GridView(int height, int width) {
 		super(new GridLayout(height, width));
@@ -30,6 +33,8 @@ public class GridView extends JPanel{
 
 		setBorder(new LineBorder(Color.BLACK));
 
+		initializeIcons();
+
 		// create the squares
 		Insets buttonMargin = new Insets(0,0,0,0);
 		for (int ii = 0; ii < height; ii++) {
@@ -38,12 +43,7 @@ public class GridView extends JPanel{
 				b.setPosX(jj);
 				b.setPosY(ii);
 				b.setMargin(buttonMargin);
-				// our chess pieces are 64x64 px in size, so we'll
-				// 'fill this in' using a transparent icon..
-				ImageIcon icon = new ImageIcon(
-						new BufferedImage(64, 64, BufferedImage.TYPE_INT_ARGB));
-				b.setIcon(icon);
-				b.setBackground(Color.WHITE);
+				setBackgroundEmpty(b);
 				gridSquares[ii][jj] = b;
 			}
 		}
@@ -53,6 +53,26 @@ public class GridView extends JPanel{
 				add(gridSquares[ii][jj]);
 			}
 		}
+	}
+
+	public void setBackgroundHappyGoal(JButton btn) {
+				btn.setIcon(greenXIcon);
+	}
+	public void setBackgroundSadGoal(JButton btn) {
+		btn.setIcon(redXIcon);
+	}
+	public void setBackgroundNeutralGoal(JButton btn) {
+		btn.setIcon(greyXIcon);
+	}
+	public void setBackgroundHopeFearfulGoal(JButton btn) {
+		btn.setIcon(blackXIcon);
+	}
+	public void setBackgroundAgent(JButton btn) {
+		btn.setIcon(agentIcon);
+	}
+	public void setBackgroundEmpty(JButton btn) {
+		btn.setIcon(blankIcon);
+		btn.setBackground(Color.WHITE);
 	}
 
 
@@ -67,6 +87,27 @@ public class GridView extends JPanel{
 
     public JButton getGridSquare(int x, int y) {
 		return gridSquares[y][x];
+	}
+
+	private void initializeIcons() {
+		File imgBlueX = new File("./res/img/blue_x.png");
+		File imgRedX = new File("./res/img/red_x.png");
+		File imgGreyX = new File("./res/img/grey_x.png");
+		File imgBlackX = new File("./res/img/black_x.png");
+		File imgGreenX = new File("./res/img/green_x.png");
+		File imgAgent = new File("./res/img/face.png");
+		try {
+			blueXIcon = new ImageIcon(ImageIO.read(imgBlueX));
+			blackXIcon = new ImageIcon(ImageIO.read(imgBlackX));
+			redXIcon = new ImageIcon(ImageIO.read(imgRedX));
+			greyXIcon = new ImageIcon(ImageIO.read(imgGreyX));
+			greenXIcon = new ImageIcon(ImageIO.read(imgGreenX));
+			agentIcon = new ImageIcon(ImageIO.read(imgAgent));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		blankIcon = new ImageIcon(
+				new BufferedImage(64, 64, BufferedImage.TYPE_INT_ARGB));
 	}
 
 

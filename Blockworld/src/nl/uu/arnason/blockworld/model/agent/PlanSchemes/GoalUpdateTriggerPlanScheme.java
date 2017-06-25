@@ -11,7 +11,7 @@ import oo2apl.plan.PlanScheme;
 import oo2apl.plan.builtin.RunOncePlan;
 
 /**
- * Created by siggi on 22-Mar-17.
+ * Respond to a GoalUpdateTrigger by adopting the goal.
  */
 public class GoalUpdateTriggerPlanScheme implements PlanScheme {
 

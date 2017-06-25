@@ -15,7 +15,8 @@ import oo2apl.plan.builtin.RunOncePlan;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Created by siggi on 22-Mar-17.
+ * The backup plan when the normal movement plan does not work.
+ * Just try to move in a random direction.
  */
 public class DestinationGoalPlanExecutionErrorPlanScheme  implements PlanScheme {
 
@@ -34,17 +35,23 @@ public class DestinationGoalPlanExecutionErrorPlanScheme  implements PlanScheme 
             this.destinationGoal = destinationGoal;
         }
 
+        /**
+         * move in a random direction
+         * */
         @Override
         public void executeOnce(PlanToAgentInterface planInterface) throws PlanExecutionError {
             U.p("makePlanExecutionErrorPlanScheme");
             int moveX = ThreadLocalRandom.current().nextInt(0, 1 + 1);
             int moveY = (moveX + 1)%2;
+            int negOrPos = ThreadLocalRandom.current().nextInt(0, 1 + 1);
+            if(negOrPos == 0) {
+                moveX = -moveX;
+                moveY = -moveY;
+            }
             if (!planInterface.getContext(Actuator.class).moveAgentBy(moveX, moveY)) {
-                // if action fails
-                //TODO: get emotional? return another plan
-                destinationGoal.setEmotion(DestinationGoal.Emotion.SAD);
+                // if action fails then
             } else {
-                //get more hopeful
+                //else
             }
         }
     }

@@ -1,9 +1,8 @@
 package nl.uu.arnason.blockworld.model;
 
-import nl.uu.arnason.blockworld.U;
 
 /**
- * Created by siggi on 13-Mar-17.
+ * Holds the information about the actual real world grid.
  */
 public class Grid extends java.util.Observable {
 
@@ -14,8 +13,8 @@ public class Grid extends java.util.Observable {
     private int agentPosY = 0;
 
     public Grid(int height, int width) {
-        this.height=height;
-        this.width=width;
+        this.height = height;
+        this.width = width;
         this.grid = new Block[height][width];
         initializeGrid();
     }
@@ -47,7 +46,6 @@ public class Grid extends java.util.Observable {
     }
 
     private void moveAgentTo(int x, int y) throws ArrayIndexOutOfBoundsException {
-        //use semaphores?
         setBlockStatus(agentPosX, agentPosY, Block.Status.EMPTY, true);
         agentPosX = x;
         agentPosY = y;
@@ -62,7 +60,6 @@ public class Grid extends java.util.Observable {
 
     @Override
     public void notifyObservers(Object arg) {
-        U.p("notifyObservers in GridView: agentPos: "+((Grid) arg).getAgentPosX()+","+((Grid) arg).getAgentPosY());
         super.notifyObservers(arg);
     }
 
@@ -109,6 +106,12 @@ public class Grid extends java.util.Observable {
 
     public void setAgentPosY(int agentPosY) {
         this.agentPosY = agentPosY;
+    }
+
+    public void setAgentPos(int x, int y) {
+        setAgentPosX(x);
+        setAgentPosY(y);
+        setBlockStatus(x,y, Block.Status.AGENT, false);
     }
 
 

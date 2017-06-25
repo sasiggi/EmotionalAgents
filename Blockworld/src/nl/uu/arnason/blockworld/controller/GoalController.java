@@ -1,6 +1,7 @@
 package nl.uu.arnason.blockworld.controller;
 
 import nl.uu.arnason.blockworld.U;
+import nl.uu.arnason.blockworld.model.agent.EState;
 import nl.uu.arnason.blockworld.model.agent.Triggers.DestinationGoal;
 import nl.uu.arnason.blockworld.model.agent.GoalBase;
 import nl.uu.arnason.blockworld.view.GoalView;
@@ -32,15 +33,14 @@ public class GoalController  implements java.awt.event.MouseListener, Observer {
      */
     @Override
     public void update(Observable o, Object arg) {
-        U.p("GoalController update");
         if(arg != null) {
             if (arg instanceof GoalBase) {
                 GoalBase goalBase = (GoalBase) arg;
                 JButton[] goalBlocks = new JButton[goalBase.getNumberOfGoals()];
                 GoalView goalView = view.getGoalView();
                 int[][] targetList = goalBase.getTargetList();
-                DestinationGoal.Emotion[] emotionList = goalBase.getEmotionList();
-                goalView.updateGoals(targetList, emotionList);
+                EState[] eStateList = goalBase.getEStateList();
+                goalView.updateGoals(targetList, eStateList);
             }
         }
     }
@@ -54,7 +54,6 @@ public class GoalController  implements java.awt.event.MouseListener, Observer {
         int y = ((GoalView.GoalBlock) e.getSource()).getPosY();
 
         if(SwingUtilities.isLeftMouseButton(e) ) {
-            U.p("Left mouse clicked");
             goalBase.removeGoal(x,y);
         }
     }

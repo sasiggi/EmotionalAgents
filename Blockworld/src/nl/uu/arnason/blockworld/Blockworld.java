@@ -20,8 +20,8 @@ public class Blockworld {
 
 	private final MainWindow view;	//Highest abstraction of the View
 	private Model realWorld;	//Highest abstraction of the model. This is the real world.
-	private GridController gridController;	//Highest abstraction of the Controller
-	private GoalController goalController;	//Highest abstraction of the Controller
+	private GridController gridController;	//The Controller for the grid
+	private GoalController goalController;	//The Controller for the list of goals
 	private BeliefBase beliefBase;
 	private GoalBase goalBase;
 
@@ -31,6 +31,13 @@ public class Blockworld {
 	private int height;
 	private int width;
 
+	/**
+	 * Set up the mvc world.
+	 * The model has an agent which has a BeliefBase and a GoalBase, and the real world Grid.
+	 * The agent can actuate on and sense the real world Grid with an Actuator and a Sensor.
+	 * The view is composed of a GridView and a GoalView.
+	 * The view and the model communicate through GridController and GoalController.
+	 */
 	public Blockworld() {
 	    this.height = 8;
 	    this.width = 8;
@@ -39,7 +46,7 @@ public class Blockworld {
 	    this.realWorld = new Model(height,width);
 	    this.view = new MainWindow(height,width);
 
-	    // Connect the model to the view with controllers
+	    // Connect the model to the view with controllers:
 	    this.gridController = new GridController();
 	    this.goalController = new GoalController();
 	    //Controller observes changes in the model:
@@ -55,7 +62,7 @@ public class Blockworld {
 		adminInterface = Platform.newPlatform(1, new DefaultMessenger());
 		// Create a new agent. The platform will return an interface to the agent.
 		// The agent has a sensor that listens for changes in the world, an actuator to act on it and an inner
-		// model that represents it's beliefs
+		// model that represents it's beliefs and goals
 		beliefBase = new BeliefBase();
 		beliefBase.setGrid(new Grid(height,width));
 		goalBase = new GoalBase();
@@ -64,6 +71,7 @@ public class Blockworld {
 		goalController.addGoalBase(goalBase);
 		goalController.addView(view);
 		view.addGoalController(goalController);
+		realWorld.getGoalBase().addObserver(gridController);
 		Sensor sensor = new Sensor();
 		realWorld.getGrid().addObserver(sensor);
 		realWorld.addObserver(sensor);	//TODO: decide who listens to what

@@ -10,7 +10,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 /**
- * Created by siggi on 16-Mar-17.
+ * An agent has a sensor to know about changes in the Grid
  */
 public class Sensor implements Context, Observer {
 
@@ -26,12 +26,12 @@ public class Sensor implements Context, Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        U.p("Sensor.update()");
         if(arg == null)  {
-            U.p("Sensor.update() arg == null");
             return;
         }
         else if(arg instanceof Grid) {
+            // The agent only knows his own position in the grid
+
             GridUpdateTrigger gridUpdateTrigger = new GridUpdateTrigger((Grid) arg);
             agent.addExternalTrigger(gridUpdateTrigger);
         }

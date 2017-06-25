@@ -1,17 +1,20 @@
 package nl.uu.arnason.blockworld.model.agent.Triggers;
 
+import nl.uu.arnason.blockworld.U;
 import nl.uu.arnason.blockworld.model.Grid;
 import nl.uu.arnason.blockworld.model.agent.BeliefBase;
+import nl.uu.arnason.blockworld.model.agent.EState;
 import nl.uu.arnason.blockworld.model.agent.GoalBase;
 import oo2apl.agent.AgentContextInterface;
-import oo2apl.agent.Goal;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+
 /**
- * Created by siggi on 15-Mar-17.
+ * A goal to go to a destination. The agent gives up after a certain number of failed movements.
+ * A DestinationGoal is sad if an action has failed too often to reach the goal, and happy when the goal is achieved.
  */
-public class DestinationGoal extends Goal {
+public class DestinationGoal extends EGoal {
 
     private static final AtomicInteger count = new AtomicInteger(1);    //Thread safe
 
@@ -21,16 +24,14 @@ public class DestinationGoal extends Goal {
     private int x;
     private int y;
     private boolean cancelled = false;
-    private Emotion emotion;
-
-    public enum Emotion {
-        HAPPY, SAD, NEUTRAL
-    }
+    private int failCounter;
+    private int maxFails;
 
     public DestinationGoal(int x, int y) {
         this.x = x;
         this.y = y;
-        this.emotion = Emotion.NEUTRAL;
+        this.failCounter = 0;
+        this.maxFails = 10;
         goalId = count.incrementAndGet();
     }
 
@@ -40,12 +41,16 @@ public class DestinationGoal extends Goal {
         Grid grid = beliefBase.getGrid();
         GoalBase goalBase = contextInterface.getContext(GoalBase.class);
         if(( grid.getAgentPosX() == this.x && grid.getAgentPosY() == this.y )) {
-            setEmotion(Emotion.HAPPY);
+            setEmotion(EState.Emotion.JOY);
             return true;
-        } else if (cancelled) {
+        } else
+        // This is here to remove goals that were cancelled from the UI. It would be prettier to have a specific function to do this
+        // that is implemented just like for achieved goals, but since for this project I want to show
+        // how the framework is changed to incorporate emotions i keep it here for simplicity.
+        if (cancelled) {
             return true;
         } else if (!goalBase.hasGoal(this)) {
-            cancel();
+            cancelled = true;
             return true;
         }
         else
@@ -56,9 +61,6 @@ public class DestinationGoal extends Goal {
         this.goalBase = goalBase;
     }
 
-    public GoalBase getGoalBase() {
-        return goalBase;
-    }
 
     public void updateView() {
         goalBase.notifyObservers();
@@ -78,18 +80,28 @@ public class DestinationGoal extends Goal {
         return goalId;
     }
 
-    public Emotion getEmotion() {
-        return emotion;
-    }
-
-    public void setEmotion(Emotion emotion) {
-        this.emotion = emotion;
+    @Override
+    public void setEmotion(EState.Emotion emotion) {
+        super.setEmotion(emotion);
         updateView();
     }
 
-    public void cancel() {
-        cancelled = true;
+    /**
+     * Run when an action fails.
+     */
+    public void onFailed() {
+        failCounter++;
+        if(maxFailuresReached()) {
+            setEmotion(EState.Emotion.DISTRESS);
+        }
+        U.p("DestinationGoal.onFailed() failCounter="+failCounter+" , target:"+x+","+y);
+        updateView();
     }
+
+    public boolean maxFailuresReached() {
+        return failCounter >= maxFails;
+    }
+
 
     public boolean isCancelled() {
         return cancelled;

@@ -4,6 +4,8 @@ import nl.uu.arnason.blockworld.U;
 import nl.uu.arnason.blockworld.model.Block;
 import nl.uu.arnason.blockworld.model.Grid;
 import nl.uu.arnason.blockworld.model.Model;
+import nl.uu.arnason.blockworld.model.agent.EState;
+import nl.uu.arnason.blockworld.model.agent.GoalBase;
 import nl.uu.arnason.blockworld.view.GridView;
 import nl.uu.arnason.blockworld.view.MainWindow;
 
@@ -36,17 +38,40 @@ public class GridController implements java.awt.event.MouseListener, Observer {
      */
     @Override
     public void update(Observable o, Object arg) {
+        GridView gv = view.getGridView();
         if(arg != null) {
-             if (arg instanceof Grid) {
-                for (int ii = 0; ii < view.getGridView().getGridHeight(); ii++) {
-                    for (int jj = 0; jj < view.getGridView().getGridWidth(); jj++) {
-                        Block.Status status = ((Grid) arg).getBlockStatus(jj, ii);
+            if (arg instanceof Grid || arg instanceof GoalBase) {
+                // show the agent and the walls
+                for (int ii = 0; ii < gv.getGridHeight(); ii++) {
+                    for (int jj = 0; jj < gv.getGridWidth(); jj++) {
+                        Block.Status status = model.getGrid().getBlockStatus(jj, ii);
                         if (status.equals(Block.Status.WALL))
-                            view.getGridView().getGridSquare(jj, ii).setBackground(Color.black);
+                            gv.getGridSquare(jj, ii).setBackground(Color.black);
                         else if (status.equals(Block.Status.AGENT))
-                            view.getGridView().getGridSquare(jj, ii).setBackground(Color.red);
+                            gv.setBackgroundAgent(gv.getGridSquare(jj, ii));
                         else
-                            view.getGridView().getGridSquare(jj, ii).setBackground(Color.white);
+                            gv.setBackgroundEmpty(gv.getGridSquare(jj, ii));
+                    }
+                }
+
+                int[][] targetList = model.getGoalBase().getTargetList();
+                EState[] emotionList = model.getGoalBase().getEStateList();
+
+
+                // show the goals if the block is not a wall or the agent is positioned there
+                for(int i = 0; i<targetList.length; i++) {
+                    int[] target = targetList[i];
+                    Block.Status status = model.getGrid().getBlockStatus(target[0], target[1]);
+                    if(!status.equals(Block.Status.WALL) && !status.equals(Block.Status.AGENT)) {
+                        if(emotionList[i].isHopeFearful())
+                            gv.setBackgroundHopeFearfulGoal(gv.getGridSquare(target[0], target[1]));
+                        if(emotionList[i].isHappy())
+                            gv.setBackgroundHappyGoal(gv.getGridSquare(target[0], target[1]));
+                        if(emotionList[i].isSad())
+                            gv.setBackgroundSadGoal(gv.getGridSquare(target[0], target[1]));
+                        if(emotionList[i].isNeutral())
+                            gv.setBackgroundNeutralGoal(gv.getGridSquare(target[0], target[1]));
+
                     }
                 }
             }
@@ -55,6 +80,8 @@ public class GridController implements java.awt.event.MouseListener, Observer {
 
     /**
      * When a button is clicked in the grid we change the model
+     * Left mouse button builds a wall.
+     * Right mouse button adds a goal.
      */
     @Override
     public void mouseReleased(MouseEvent e) {
@@ -62,14 +89,12 @@ public class GridController implements java.awt.event.MouseListener, Observer {
         int y = ((GridView.GridBlock) e.getSource()).getPosY();
 
         if(SwingUtilities.isLeftMouseButton(e) ) {
-            U.p("Left mouse clicked");
             if (!model.getGrid().hasWall(x, y))
                 model.getGrid().addWall(x, y);
             else
                 model.getGrid().removeWall(x, y);
         }
         else if(SwingUtilities.isRightMouseButton(e)){
-            U.p("Right mouse clicked");
             model.getGoalBase().addGoal(x,y);
         }
     }

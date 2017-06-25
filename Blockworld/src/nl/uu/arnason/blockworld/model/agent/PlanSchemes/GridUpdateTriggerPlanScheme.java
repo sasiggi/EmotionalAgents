@@ -38,7 +38,6 @@ public class GridUpdateTriggerPlanScheme implements PlanScheme {
             BeliefBase beliefBase = planInterface.getContext(BeliefBase.class);
 
             // update the belief base grid according to the triggered change from the model
-            U.p("Model update triggered");
             Grid beliefGrid = beliefBase.getGrid();
             beliefGrid.makeLike(modelGrid);
         }

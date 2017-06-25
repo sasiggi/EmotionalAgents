@@ -5,6 +5,8 @@ import nl.uu.arnason.blockworld.model.Model;
 import javax.swing.*;
 
 /**
+ **** This package is written by Sigurdur Arnason, email sasiggi@gmail.com ****
+ *
  * Starts the UI thread
  */
 public class Main {
@@ -22,7 +24,7 @@ public class Main {
                 f.setLocationByPlatform(true);
 
                 // ensures the frame is the minimum size it needs to be
-                // in order display the components within it
+                // in order to display the components within it
                 f.pack();
                 // ensures the minimum size is enforced.
                 f.setMinimumSize(f.getSize());

@@ -303,6 +303,7 @@ public final class AgentRuntimeData {
 				if(goal.isAchieved(this.contextInterface)){ 
 					this.goals.remove(goal);
 				}
+
 			} 
 		}
 	}

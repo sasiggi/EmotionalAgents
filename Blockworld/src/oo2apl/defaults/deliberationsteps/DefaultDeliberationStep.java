@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import nl.uu.arnason.blockworld.model.agent.Triggers.DestinationGoal;
+import nl.uu.arnason.blockworld.model.agent.Triggers.EGoal;
 import oo2apl.agent.DeliberationStepToAgentInterface;
 import oo2apl.agent.Trigger;
 import oo2apl.agent.Goal;
@@ -32,7 +33,6 @@ public abstract class DefaultDeliberationStep implements DeliberationStep {
 	 * plan scheme is applied. If the triggers are goals then they will  be skipped if they are 
 	 * already pursued (i.e. a plan is already in existence for that goal). */
 	protected final void applyPlanSchemes(final List<? extends Trigger> triggers, final List<PlanScheme> planSchemes){
-		boolean destinationGoalPlanMade = false;
 		for(Trigger trigger : triggers){
 			// For goals check whether there is not already a plan instantiated for the goal. In this implementation each goal can have
 			// at most one instantiated plan scheme that tries to achieve that goal.
@@ -40,16 +40,11 @@ public abstract class DefaultDeliberationStep implements DeliberationStep {
 			// the goal. Hence multiple plan schemes could be instantiated for the same goal. However, this is very rarely used
 			// and highly inefficient.
 			if(!(trigger instanceof Goal && ((Goal)trigger).isPursued())){
-				// @SOA: only make plans for one DestinationGoal
-				if(trigger instanceof DestinationGoal && destinationGoalPlanMade)
-					continue;
-				// @SOA: don't make plans for sad goals
-				if(trigger instanceof DestinationGoal && ((DestinationGoal) trigger).getEmotion().equals(DestinationGoal.Emotion.SAD))
+				// @Sigurdur Arnason: if this is an EGoal and is not hopeFearful then we don't make a plan
+				if(trigger instanceof EGoal && !((EGoal) trigger).getEState().isHopeFearful())
 					continue;
 				for(PlanScheme planScheme : planSchemes){
 					if(this.deliberationInterface.tryApplication(trigger, planScheme)){
-						if(trigger instanceof DestinationGoal)
-							destinationGoalPlanMade = true;
 						break;
 					}
 				}

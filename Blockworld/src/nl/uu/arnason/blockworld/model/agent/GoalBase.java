@@ -9,9 +9,12 @@ import oo2apl.agent.ExternalProcessToAgentInterface;
 import java.util.ArrayList;
 
 /**
- * Created by siggi on 17-Mar-17.
+ * We keep references to the agent's goals. oo2apl does not offer an explicit way to manipulate an agent's
+ * goals from outside it but this is added here so we can show and manipulate the goals in the GoalView.
+ * Use this layer to add and remove goals for the agent.
  */
 public class GoalBase extends java.util.Observable implements Context {
+
 
     private ArrayList<DestinationGoal> destinationGoals;
 
@@ -33,7 +36,6 @@ public class GoalBase extends java.util.Observable implements Context {
             return false;
         if(destinationGoals.add(goal)) {
             GoalUpdateTrigger goalUpdateTrigger = new GoalUpdateTrigger(goal);
-            U.p("GoalBase:addGoal: "+(goalUpdateTrigger.getDestinationGoal().getX()+","+goalUpdateTrigger.getDestinationGoal().getY()));
             agent.addExternalTrigger(goalUpdateTrigger);
             setChanged();
             notifyObservers(this);
@@ -43,7 +45,6 @@ public class GoalBase extends java.util.Observable implements Context {
     }
 
     public void removeGoal(int x, int y) {
-        U.p("GoalBase.removeGoal");
         DestinationGoal goal = new DestinationGoal(x, y);
         // remove all goals for x,y. Should be just one.
         while(true) {
@@ -70,10 +71,10 @@ public class GoalBase extends java.util.Observable implements Context {
         return list;
     }
 
-    public DestinationGoal.Emotion[] getEmotionList() {
-        DestinationGoal.Emotion[] list = new DestinationGoal.Emotion[destinationGoals.size()];
+    public EState[] getEStateList() {
+        EState[] list = new EState[destinationGoals.size()];
         for (int i = 0; i < destinationGoals.size(); i++) {
-            list[i] = destinationGoals.get(i).getEmotion();
+            list[i] = destinationGoals.get(i).getEState();
         }
         return list;
     }
