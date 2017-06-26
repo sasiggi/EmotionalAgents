@@ -3,6 +3,7 @@ package oo2apl.defaults.deliberationsteps;
 import java.util.Iterator;
 import java.util.List;
 
+import nl.uu.arnason.blockworld.model.agent.EState;
 import nl.uu.arnason.blockworld.model.agent.Triggers.DestinationGoal;
 import nl.uu.arnason.blockworld.model.agent.Triggers.EGoal;
 import oo2apl.agent.DeliberationStepToAgentInterface;
@@ -46,6 +47,10 @@ public abstract class DefaultDeliberationStep implements DeliberationStep {
 				for(PlanScheme planScheme : planSchemes){
 					if(this.deliberationInterface.tryApplication(trigger, planScheme)){
 						break;
+					}
+					// @Sigurdur Arnason: if no plan was applicable for an EGoal it becomes distressed
+					if(trigger instanceof EGoal) {
+						((EGoal) trigger).setEmotion(EState.Emotion.DISTRESS);
 					}
 				}
 			}

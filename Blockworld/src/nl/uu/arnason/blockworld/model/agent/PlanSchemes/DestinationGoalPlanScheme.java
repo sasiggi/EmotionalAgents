@@ -21,7 +21,14 @@ import oo2apl.plan.builtin.RunOncePlan;
 public class DestinationGoalPlanScheme implements PlanScheme {
 
     public Plan instantiate(final Trigger trigger, final AgentContextInterface contextInterface){
+
         if(trigger instanceof DestinationGoal){
+            // if the plan has failed too many times the agent can't try any more.
+            if(contextInterface.getContext(BeliefBase.class).getTryCounter() <= 0) {
+                contextInterface.getContext(BeliefBase.class).resetTryCounter();
+                return null;
+            }
+
             return new DestinationGoalExternalTriggerPlan((DestinationGoal) trigger);
         }
         return null;
@@ -68,7 +75,7 @@ public class DestinationGoalPlanScheme implements PlanScheme {
             }
             // If the agent moved successfully neither vertically nor horizontally we throw an error and resort to the backup plan
             U.p("DestinationGoalPlanScheme: Obstacle for plan");
-            destinationGoal.onFailed();
+            beliefBase.decrementCounter();
             throw new DestinationGoalPlanExecutionError(destinationGoal);
         }
     }

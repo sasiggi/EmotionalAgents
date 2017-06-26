@@ -41,7 +41,6 @@ public class DestinationGoal extends EGoal {
         Grid grid = beliefBase.getGrid();
         GoalBase goalBase = contextInterface.getContext(GoalBase.class);
         if(( grid.getAgentPosX() == this.x && grid.getAgentPosY() == this.y )) {
-            setEmotion(EState.Emotion.JOY);
             return true;
         } else
         // This is here to remove goals that were cancelled from the UI. It would be prettier to have a specific function to do this
@@ -84,22 +83,6 @@ public class DestinationGoal extends EGoal {
     public void setEmotion(EState.Emotion emotion) {
         super.setEmotion(emotion);
         updateView();
-    }
-
-    /**
-     * Run when an action fails.
-     */
-    public void onFailed() {
-        failCounter++;
-        if(maxFailuresReached()) {
-            setEmotion(EState.Emotion.DISTRESS);
-        }
-        U.p("DestinationGoal.onFailed() failCounter="+failCounter+" , target:"+x+","+y);
-        updateView();
-    }
-
-    public boolean maxFailuresReached() {
-        return failCounter >= maxFails;
     }
 
 

@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import nl.uu.arnason.blockworld.model.agent.EState;
+import nl.uu.arnason.blockworld.model.agent.Triggers.EGoal;
 import oo2apl.defaults.messenger.MessageReceiverNotFoundException;
 import oo2apl.deliberation.DeliberationStep;
 import oo2apl.deliberation.SelfRescheduler;
@@ -300,7 +302,10 @@ public final class AgentRuntimeData {
 		if(!this.goals.isEmpty()){
 			List<Goal> snapshot = new ArrayList<>(this.goals);
 			for(Goal goal : snapshot){
-				if(goal.isAchieved(this.contextInterface)){ 
+				if(goal.isAchieved(this.contextInterface)){
+					// @Sigurdur Arnason: achieved goals become joyful
+					if(goal instanceof EGoal)
+						((EGoal) goal).setEmotion(EState.Emotion.JOY);
 					this.goals.remove(goal);
 				}
 

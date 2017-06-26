@@ -15,7 +15,30 @@ public class BeliefBase implements Context{
 
     private Grid grid;  // internal grid belief
 
+    private int maxTries = 10;
+
+    // the number of tries left for the currently active DestinationGoal
+    private int tryCounter;
+
     public BeliefBase() {
+        resetTryCounter();
+    }
+
+    public void resetTryCounter() {
+        tryCounter = maxTries;
+    }
+
+
+    public int getTryCounter() {
+        return tryCounter;
+    }
+
+    public void setTryCounter(int tryCounter) {
+        this.tryCounter = tryCounter;
+    }
+
+    public void decrementCounter() {
+        tryCounter--;
     }
 
     public Grid getGrid() {
